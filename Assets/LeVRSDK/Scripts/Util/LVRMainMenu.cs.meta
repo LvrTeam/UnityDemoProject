@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: e437ffb7de5844b42b64f89763daf449
+timeCreated: 1457425853
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - FadeInTexture: {instanceID: 0}
+  - FontReplace: {instanceID: 0}
+  - CrosshairImage: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
