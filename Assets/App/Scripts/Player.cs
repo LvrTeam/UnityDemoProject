@@ -22,16 +22,16 @@ limitations under the License.
 using UnityEngine;
 using System.Collections;
 
-					// required for Coroutines
+// required for Coroutines
 using System.Runtime.InteropServices;
 
-		// required for DllImport
+// required for DllImport
 using System;
 
-								// requred for IntPtr
+// requred for IntPtr
 using System.IO;
 
-							// required for File
+// required for File
 
 /************************************************************************************
 Usage:
@@ -71,7 +71,7 @@ Implementation:
 
 ************************************************************************************/
 
-public class MoviePlayerSample : MonoBehaviour
+public class Player : BaseBehaviour
 {
 	public string movieName = string.Empty;
 	private string mediaFullPath = string.Empty;
@@ -90,9 +90,9 @@ public class MoviePlayerSample : MonoBehaviour
 		Initialize = 0,
 		Shutdown = 1,
 		Update = 2,
-		Max_EventType}
+		Max_EventType
 
-	;
+	}
 
 	/// <summary>
 	/// The start of the numeric range used by event IDs.
@@ -231,10 +231,9 @@ public class MoviePlayerSample : MonoBehaviour
 	AndroidJavaObject StartVideoPlayerOnTextureId (int texWidth, int texHeight, string mediaPath)
 	{
 
-		AndroidJavaClass activityClass = new AndroidJavaClass ("com.unity3d.player.UnityPlayer");
-		AndroidJavaObject activity = activityClass.GetStatic<AndroidJavaObject>("currentActivity");
+		AndroidJavaObject activity = getActivity();
 
-		activity.Call ("showToast","StartVideoPlayerOnTextureId");
+//		activity.Call ("showToast","StartVideoPlayerOnTextureId");
 
 		OVR_Media_Surface_SetTextureParms (textureWidth, textureHeight);
 		IntPtr androidSurface = OVR_Media_Surface_GetObject ();
@@ -259,22 +258,22 @@ public class MoviePlayerSample : MonoBehaviour
 		AndroidJNI.CallVoidMethod (mediaPlayer.GetRawObject (), setSurfaceMethodId, parms);
 
 //		activity.Call ("runOnUiThread", new AndroidJavaRunnable (()=>{
-			try {
-			AndroidJavaClass uriClass=new AndroidJavaClass("android/net/Uri");
-			AndroidJavaObject uri=uriClass.CallStatic<AndroidJavaObject>("parse","http://127.0.0.1:6999/play?enc=base64&url=aHR0cDovL3BsYXkuZzNwcm94eS5sZWNsb3VkLmNvbS92b2QvdjIvTVRrM0x6STVMekkxTDJ4bGRIWXRkWFJ6THpFMEwzWmxjbDh3TUY4eU1pMHhNRFV6T0RNM01UQXpMV0YyWXkwM09UY3lNVFk1TFdGaFl5MHlOVFl3TURBdE1UVXlNRE0wTFRFMU5qWXpNVGd3TkMwMFpUUTRNMk0yTm1ZNE56QTJZakkwWW1ZME9XSTJZVGhtTVRZME1qSm1ZaTB4TkRZM05qa3hPRE0yTnpZMUxtMXdOQT09P2I9ODIzNyZjdmlkPTEyNDE4MjkwMTQ0NzYma2V5PTA4ZDFhYTg1MWIyYWNmYWZjYThjNTFmZDE2YWIxNTllJmxzYnY9MmZZJmxzZGc9S0RjZURNaWc0bDNIODJmaVlsUms3eDJ5cDFQRyZsc3N0PTEmbHNzdj00ZnV4MUlfVDFfU09KX1ZmaktfUEQyQzA3MzFBQUU1NDk1QTdGNDVDRTgwMEQyRTEzMzU4X0lXX01mTHQ4cm5zc19MQmJvS0UmbHN0bT0xYktqNm8mbW1zaWQ9NTk4MzAxNDMmcGF5ZmY9MCZwaXA9YTdjMmNhOTllMGRlMmI5MzhlN2U3ZTgwMWI4ZDljOWMmcGxhdGlkPTE1JnBsYXlpZD0wJnNwbGF0aWQ9MTUwNyZ0bT0xNDY3Nzk3MjI2JnRzcz1ubyZ2dHlwZT0xNjc=&ext=m3u8&tagtime=1467797228");
+		try {
+			AndroidJavaClass uriClass = new AndroidJavaClass ("android/net/Uri");
+			AndroidJavaObject uri = uriClass.CallStatic<AndroidJavaObject> ("parse", "http://127.0.0.1:6999/play?enc=base64&url=aHR0cDovL3BsYXkuZzNwcm94eS5sZWNsb3VkLmNvbS92b2QvdjIvTVRrM0x6STVMekkxTDJ4bGRIWXRkWFJ6THpFMEwzWmxjbDh3TUY4eU1pMHhNRFV6T0RNM01UQXpMV0YyWXkwM09UY3lNVFk1TFdGaFl5MHlOVFl3TURBdE1UVXlNRE0wTFRFMU5qWXpNVGd3TkMwMFpUUTRNMk0yTm1ZNE56QTJZakkwWW1ZME9XSTJZVGhtTVRZME1qSm1ZaTB4TkRZM05qa3hPRE0yTnpZMUxtMXdOQT09P2I9ODIzNyZjdmlkPTEyNDE4MjkwMTQ0NzYma2V5PTA4ZDFhYTg1MWIyYWNmYWZjYThjNTFmZDE2YWIxNTllJmxzYnY9MmZZJmxzZGc9S0RjZURNaWc0bDNIODJmaVlsUms3eDJ5cDFQRyZsc3N0PTEmbHNzdj00ZnV4MUlfVDFfU09KX1ZmaktfUEQyQzA3MzFBQUU1NDk1QTdGNDVDRTgwMEQyRTEzMzU4X0lXX01mTHQ4cm5zc19MQmJvS0UmbHN0bT0xYktqNm8mbW1zaWQ9NTk4MzAxNDMmcGF5ZmY9MCZwaXA9YTdjMmNhOTllMGRlMmI5MzhlN2U3ZTgwMWI4ZDljOWMmcGxhdGlkPTE1JnBsYXlpZD0wJnNwbGF0aWQ9MTUwNyZ0bT0xNDY3Nzk3MjI2JnRzcz1ubyZ2dHlwZT0xNjc=&ext=m3u8&tagtime=1467797228");
 
-			mediaPlayer.Call("setDataSource",activity,uri);
-				mediaPlayer.Call ("prepare");
+			mediaPlayer.Call ("setDataSource", activity, uri);
+			mediaPlayer.Call ("prepare");
 //				mediaPlayer.Call ("setLooping", true);
-				mediaPlayer.Call ("start");
-			} catch (Exception e) {
+			mediaPlayer.Call ("start");
+		} catch (Exception e) {
 
 //			logclass.CallStatic ("d","hcq",e.Message);
 
 //			activity.Call ("showToast",e.StackTrace);
 
-				Debug.Log ("Failed to start mediaPlayer with message " + e.Message);
-			}
+			Debug.Log ("Failed to start mediaPlayer with message " + e.Message);
+		}
 //		}));
 
 		return mediaPlayer;
