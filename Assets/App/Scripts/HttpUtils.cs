@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Security.Policy;
+using LitJson;
 
 public class HttpUtils
 {
@@ -15,7 +16,9 @@ public class HttpUtils
 
 	public delegate void OnResponseDelegate (string response, byte[] rawResponse, int statusCode, bool isSuccess);
 
-	public delegate void OnDownloadFinish ();
+	public delegate void OnResponseDelegate<T> (T response, int statusCode, bool isSuccess);
+
+	public delegate void OnDownloadFinishDelegate ();
 
 	private static void SetupIfNeed ()
 	{
@@ -78,8 +81,18 @@ public class HttpUtils
 		HTTPManager.RequestTimeout = TimeSpan.FromSeconds (seconds);
 	}
 
+	private static void HandleResponse<T> (HTTPRequest originalRequest, HTTPResponse response, OnResponseDelegate<T> callback)
+	{
+		//如果请求错误 HTTPResponse对象会返回null
+		if (callback != null && response != null) {
+			T responseObj = JsonMapper.ToObject<T> (response.DataAsText);
+			callback (responseObj, response.StatusCode, response.IsSuccess);
+		}
+	}
+
 	private static void HandleResponse (HTTPRequest originalRequest, HTTPResponse response, OnResponseDelegate callback)
 	{
+		//如果请求错误 HTTPResponse对象会返回null
 		if (callback != null && response != null) {
 			callback (response.DataAsText, response.Data, response.StatusCode, response.IsSuccess);
 		}
@@ -103,7 +116,13 @@ public class HttpUtils
 		}
 	}
 
-	//如果请求错误 HTTPResponse对象会返回null
+	public static HTTPRequest Get<T> (string url, Dictionary<string,string> headers, OnResponseDelegate<T> callback)
+	{
+		return Get (url, headers, delegate(HTTPRequest req, HTTPResponse resp) {
+			HandleResponse<T> (req, resp, callback);
+		});
+	}
+
 	public static HTTPRequest Get (string url, Dictionary<string,string> headers, OnResponseDelegate callback)
 	{
 		return Get (url, headers, delegate(HTTPRequest req, HTTPResponse resp) {
@@ -116,10 +135,19 @@ public class HttpUtils
 		SetupIfNeed ();
 
 		HTTPRequest request = new HTTPRequest (new Uri (url), callback);
+
 		AddHeads (request, headers);
+
 		request.Send ();
 
 		return request;
+	}
+
+	public static HTTPRequest Post<T> (string url, Dictionary<string,string> headers, Dictionary<string,string> requestParams, OnResponseDelegate<T> callback)
+	{
+		return Post (url, headers, requestParams, delegate(HTTPRequest req, HTTPResponse resp) {
+			HandleResponse<T> (req, resp, callback);
+		});
 	}
 
 	public static HTTPRequest Post (string url, Dictionary<string,string> headers, Dictionary<string,string> requestParams, OnResponseDelegate callback)
@@ -145,7 +173,7 @@ public class HttpUtils
 		return request;
 	}
 
-	public static HTTPRequest Download (string url, string savePath, OnDownloadFinish callback)
+	public static HTTPRequest Download (string url, string savePath, OnDownloadFinishDelegate callback)
 	{
 
 		SetupIfNeed ();
