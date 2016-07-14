@@ -2,12 +2,13 @@
 
 using UnityEngine;
 using System.Collections;
+using BestHTTP;
 
 public class BaseBehaviour : MonoBehaviour
 {
 	private AndroidJavaObject activity;
 
-	protected AndroidJavaObject getActivity ()
+	protected AndroidJavaObject GetActivity ()
 	{
 		if (activity == null) {
 			AndroidJavaClass activityClass = new AndroidJavaClass ("com.unity3d.player.UnityPlayer");
@@ -16,16 +17,10 @@ public class BaseBehaviour : MonoBehaviour
 		return activity;
 	}
 
-	protected void runOnAndroidUiThread (Runnable runnable)
+	protected void RunOnAndroidUiThread (AndroidJavaRunnable runnable)
 	{
-		getActivity ().Call ("runOnUiThread", new AndroidJavaRunnable (() => {
-			runnable.run ();
-		}));
+		GetActivity ().Call ("runOnUiThread", runnable);
 	}
-
-	protected interface Runnable
-	{
-		void run ();
-	}
+		
 }
 

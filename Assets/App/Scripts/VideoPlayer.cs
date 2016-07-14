@@ -70,8 +70,9 @@ Implementation:
 	on the surface in the Unity editor, it will draw the current video frame.
 
 ************************************************************************************/
+using System.Runtime.Remoting.Channels;
 
-public class Player : BaseBehaviour
+public class VideoPlayer : BaseBehaviour
 {
 	public string movieName = string.Empty;
 	private string mediaFullPath = string.Empty;
@@ -231,7 +232,7 @@ public class Player : BaseBehaviour
 	AndroidJavaObject StartVideoPlayerOnTextureId (int texWidth, int texHeight, string mediaPath)
 	{
 
-		AndroidJavaObject activity = getActivity();
+		AndroidJavaObject activity = GetActivity ();
 
 //		activity.Call ("showToast","StartVideoPlayerOnTextureId");
 
